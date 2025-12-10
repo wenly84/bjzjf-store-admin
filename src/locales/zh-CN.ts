@@ -7,6 +7,7 @@ export default {
     login: '登录',
     required: '该项为必填项',
     loginOut: '退出系统',
+    document: '项目文档',
     profile: '个人中心',
     reminder: '温馨提示',
     loginOutMessage: '是否退出本系统？',
@@ -91,6 +92,7 @@ export default {
     localeIcon: '多语言图标',
     messageIcon: '消息图标',
     tagsView: '标签页',
+    tagsViewImmerse: '标签页沉浸',
     logo: '标志',
     greyMode: '灰色模式',
     fixedHeader: '固定头部',
@@ -112,8 +114,8 @@ export default {
     small: '小'
   },
   login: {
-    welcome: '欢迎使用-运营支撑系统',
-    message: '北京智匠坊科技有限公司-运营支撑系统',
+    welcome: '欢迎使用本系统',
+    message: '开箱即用的中后台管理系统',
     tenantname: '租户名称',
     username: '用户名',
     password: '密码',
@@ -139,12 +141,17 @@ export default {
     btnQRCode: '二维码登录',
     qrcode: '扫描二维码登录',
     btnRegister: '注册',
-    SmsSendMsg: '验证码已发送'
+    SmsSendMsg: '验证码已发送',
+    resetPassword: '重置密码',
+    resetPasswordSuccess: '重置密码成功',
+    invalidTenantName: '无效的租户名称'
   },
   captcha: {
+    verify: '验证',
     verification: '请完成安全验证',
     slide: '向右滑动完成验证',
     point: '请依次点击',
+    code: '请输入验证码',
     success: '验证成功',
     fail: '验证失败'
   },
@@ -367,7 +374,7 @@ export default {
       qrSignInFormTitle: '二维码登录',
       signUpFormTitle: '注册',
       forgetFormTitle: '重置密码',
-      signInTitle: '北京智匠坊科技有限公司-运营支撑系统',
+      signInTitle: '开箱即用的中后台管理系统',
       signInDesc: '输入您的个人详细信息开始使用！',
       policy: '我同意xxx隐私政策',
       scanSign: `扫码后点击"确认"，即可完成登录`,
@@ -411,9 +418,9 @@ export default {
     },
     info: {
       title: '基本信息',
-      basicInfo: '基本资料',
-      resetPwd: '修改密码',
-      userSocial: '社交信息'
+      basicInfo: '基本设置',
+      resetPwd: '密码设置',
+      userSocial: '社交绑定'
     },
     rules: {
       nickname: '请输入用户昵称',

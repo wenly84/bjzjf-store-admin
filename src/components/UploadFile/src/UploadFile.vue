@@ -1,5 +1,5 @@
 <template>
-  <div class="upload-file">
+  <div v-if="!disabled" class="upload-file">
     <el-upload
       ref="uploadRef"
       v-model:file-list="fileList"
@@ -20,11 +20,11 @@
       class="upload-file-uploader"
       name="file"
     >
-      <el-button v-if="!disabled" type="primary">
+      <el-button type="primary">
         <Icon icon="ep:upload-filled" />
         选取文件
       </el-button>
-      <template v-if="isShowTip && !disabled" #tip>
+      <template v-if="isShowTip" #tip>
         <div style="font-size: 8px">
           大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
         </div>
@@ -32,7 +32,6 @@
           格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b> 的文件
         </div>
       </template>
-      <!-- TODO @puhui999：1）表单展示的时候，位置会偏掉，已发微信；2）disable 的时候，应该把【删除】按钮也隐藏掉？ -->
       <template #file="row">
         <div class="flex items-center">
           <span>{{ row.file.name }}</span>
@@ -53,6 +52,18 @@
         </div>
       </template>
     </el-upload>
+  </div>
+
+  <!-- 上传操作禁用时 -->
+  <div v-if="disabled" class="upload-file">
+    <div v-for="(file, index) in fileList" :key="index" class="flex items-center file-list-item">
+      <span>{{ file.name }}</span>
+      <div class="ml-10px">
+        <el-link :href="file.url" :underline="false" download target="_blank" type="primary">
+          下载
+        </el-link>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -75,7 +86,8 @@ const props = defineProps({
   autoUpload: propTypes.bool.def(true), // 自动上传
   drag: propTypes.bool.def(false), // 拖拽上传
   isShowTip: propTypes.bool.def(true), // 是否显示提示
-  disabled: propTypes.bool.def(false) // 是否禁用上传组件 ==> 非必传（默认为 false）
+  disabled: propTypes.bool.def(false), // 是否禁用上传组件 ==> 非必传（默认为 false）
+  directory: propTypes.string.def(undefined) // 上传目录 ==> 非必传（默认为 undefined）
 })
 
 // ========== 上传相关 ==========
@@ -84,7 +96,7 @@ const uploadList = ref<UploadUserFile[]>([])
 const fileList = ref<UploadUserFile[]>([])
 const uploadNumber = ref<number>(0)
 
-const { uploadUrl, httpRequest } = useUpload()
+const { uploadUrl, httpRequest } = useUpload(props.directory)
 
 // 文件上传之前判断
 const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
@@ -110,7 +122,9 @@ const beforeUpload: UploadProps['beforeUpload'] = (file: UploadRawFile) => {
     return false
   }
   message.success('正在上传文件，请稍候...')
+  // 只有在验证通过后才增加计数器
   uploadNumber.value++
+  return true
 }
 // 处理上传的文件发生变化
 // const handleFileChange = (uploadFile: UploadFile): void => {
@@ -137,6 +151,8 @@ const handleExceed: UploadProps['onExceed'] = (): void => {
 // 上传错误提示
 const excelUploadError: UploadProps['onError'] = (): void => {
   message.error('导入数据失败，请您重新上传！')
+  // 上传失败时减少计数器，避免后续上传被阻塞
+  uploadNumber.value = Math.max(0, uploadNumber.value - 1)
 }
 // 删除上传文件
 const handleRemove = (file: UploadFile) => {
@@ -210,5 +226,10 @@ const emitUpdateModelValue = () => {
 
 :deep(.ele-upload-list__item-content-action .el-link) {
   margin-right: 10px;
+}
+
+.file-list-item {
+  border: 1px dashed var(--el-border-color-darker);
+  border-radius: 8px;
 }
 </style>

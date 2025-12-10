@@ -11,9 +11,9 @@
         @click="handleClick(item.routerName)"
       >
         <CountTo
-          :prefix="item.prefix"
-          :end-val="item.value"
           :decimals="item.decimals"
+          :end-val="item.value"
+          :prefix="item.prefix"
           class="text-3xl"
         />
         <span class="text-center">{{ item.name }}</span>
@@ -69,7 +69,6 @@ const getOrderData = async () => {
 
 /** 查询商品数据 */
 const getProductData = async () => {
-  // TODO: @芋艿：这个接口的返回值，是不是用命名字段更好些？
   const productCount = await ProductSpuApi.getTabsCount()
   data.productForSale.value = productCount['0']
   data.productInWarehouse.value = productCount['1']

@@ -143,6 +143,7 @@ export enum DICT_TYPE {
   INFRA_OPERATE_TYPE = 'infra_operate_type',
 
   // ========== BPM 模块 ==========
+  BPM_MODEL_TYPE = 'bpm_model_type',
   BPM_MODEL_FORM_TYPE = 'bpm_model_form_type',
   BPM_TASK_CANDIDATE_STRATEGY = 'bpm_task_candidate_strategy',
   BPM_PROCESS_INSTANCE_STATUS = 'bpm_process_instance_status',
@@ -158,7 +159,6 @@ export enum DICT_TYPE {
   PAY_NOTIFY_STATUS = 'pay_notify_status', // 商户支付回调状态
   PAY_NOTIFY_TYPE = 'pay_notify_type', // 商户支付回调状态
   PAY_TRANSFER_STATUS = 'pay_transfer_status', // 转账订单状态
-  PAY_TRANSFER_TYPE = 'pay_transfer_type', // 转账订单状态
 
   // ========== MP 模块 ==========
   MP_AUTO_REPLY_REQUEST_MATCH = 'mp_auto_reply_request_match', // 自动回复请求匹配类型
@@ -194,31 +194,14 @@ export enum DICT_TYPE {
   PROMOTION_COUPON_TEMPLATE_VALIDITY_TYPE = 'promotion_coupon_template_validity_type', // 优惠劵模板的有限期类型
   PROMOTION_COUPON_STATUS = 'promotion_coupon_status', // 优惠劵的状态
   PROMOTION_COUPON_TAKE_TYPE = 'promotion_coupon_take_type', // 优惠劵的领取方式
-  PROMOTION_ACTIVITY_STATUS = 'promotion_activity_status', // 优惠活动的状态
   PROMOTION_CONDITION_TYPE = 'promotion_condition_type', // 营销的条件类型枚举
   PROMOTION_BARGAIN_RECORD_STATUS = 'promotion_bargain_record_status', // 砍价记录的状态
   PROMOTION_COMBINATION_RECORD_STATUS = 'promotion_combination_record_status', // 拼团记录的状态
   PROMOTION_BANNER_POSITION = 'promotion_banner_position', // banner 定位
 
-  // ========== CRM - 客户管理模块 ==========
-  CRM_AUDIT_STATUS = 'crm_audit_status', // CRM 审批状态
-  CRM_BIZ_TYPE = 'crm_biz_type', // CRM 业务类型
-  CRM_BUSINESS_END_STATUS_TYPE = 'crm_business_end_status_type', // CRM 商机结束状态类型
-  CRM_RECEIVABLE_RETURN_TYPE = 'crm_receivable_return_type', // CRM 回款的还款方式
-  CRM_CUSTOMER_INDUSTRY = 'crm_customer_industry', // CRM 客户所属行业
-  CRM_CUSTOMER_LEVEL = 'crm_customer_level', // CRM 客户级别
-  CRM_CUSTOMER_SOURCE = 'crm_customer_source', // CRM 客户来源
-  CRM_PRODUCT_STATUS = 'crm_product_status', // CRM 商品状态
-  CRM_PERMISSION_LEVEL = 'crm_permission_level', // CRM 数据权限的级别
-  CRM_PRODUCT_UNIT = 'crm_product_unit', // CRM 产品单位
-  CRM_FOLLOW_UP_TYPE = 'crm_follow_up_type', // CRM 跟进方式
-
-  // ========== ERP - 企业资源计划模块  ==========
-  ERP_AUDIT_STATUS = 'erp_audit_status', // ERP 审批状态
-  ERP_STOCK_RECORD_BIZ_TYPE = 'erp_stock_record_biz_type', // 库存明细的业务类型
-
   // ========== AI - 人工智能模块  ==========
   AI_PLATFORM = 'ai_platform', // AI 平台
+  AI_MODEL_TYPE = 'ai_model_type', // AI 模型类型
   AI_IMAGE_STATUS = 'ai_image_status', // AI 图片状态
   AI_MUSIC_STATUS = 'ai_music_status', // AI 音乐状态
   AI_GENERATE_MODE = 'ai_generate_mode', // AI 生成模式
@@ -226,5 +209,6 @@ export enum DICT_TYPE {
   AI_WRITE_LENGTH = 'ai_write_length', // AI 写作长度
   AI_WRITE_FORMAT = 'ai_write_format', // AI 写作格式
   AI_WRITE_TONE = 'ai_write_tone', // AI 写作语气
-  AI_WRITE_LANGUAGE = 'ai_write_language' // AI 写作语言
+  AI_WRITE_LANGUAGE = 'ai_write_language', // AI 写作语言
+  AI_MCP_CLIENT_NAME = 'ai_mcp_client_name', // AI MCP Client 名字
 }

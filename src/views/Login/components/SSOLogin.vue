@@ -1,7 +1,7 @@
 <template>
   <div v-show="ssoVisible" class="form-cont">
     <!-- 应用名 -->
-    <LoginFormTitle style="width: 100%" />
+    <LoginFormTitle class="w-full" />
     <el-tabs class="form" style="float: none" value="uname">
       <el-tab-pane :label="client.name" name="uname" />
     </el-tabs>
@@ -14,18 +14,18 @@
             <el-checkbox
               v-for="scope in queryParams.scopes"
               :key="scope"
-              :label="scope"
-              style="display: block; margin-bottom: -10px"
+              :value="scope"
+              class="block mb-[-10px]"
             >
               {{ formatScope(scope) }}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <!-- 下方的登录按钮 -->
-        <el-form-item class="w-1/1">
+        <el-form-item class="w-full">
           <el-button
             :loading="formLoading"
-            class="w-6/10"
+            class="w-3/5"
             type="primary"
             @click.prevent="handleAuthorize(true)"
           >
@@ -83,9 +83,6 @@ const formLoading = ref(false) // 表单是否提交中
 const init = async () => {
   // 防止在没有登录的情况下循环弹窗
   if (typeof route.query.client_id === 'undefined') return
-  // 解析参数
-  // 例如说【自动授权不通过】：client_id=default&redirect_uri=https%3A%2F%2Fwww.hansi.site/&response_type=code&scope=user.read%20user.write
-  // 例如说【自动授权通过】：client_id=default&redirect_uri=https%3A%2F%2Fwww.hansi.site&response_type=code&scope=user.read
   queryParams.responseType = route.query.response_type as string
   queryParams.clientId = route.query.client_id as string
   queryParams.redirectUri = route.query.redirect_uri as string

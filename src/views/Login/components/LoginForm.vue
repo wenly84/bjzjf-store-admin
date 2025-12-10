@@ -9,13 +9,13 @@
     label-width="120px"
     size="large"
   >
-    <el-row style="margin-right: -10px; margin-left: -10px">
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+    <el-row class="mx-[-10px]">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
-          <LoginFormTitle style="width: 100%" />
+          <LoginFormTitle class="w-full" />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
           <el-input
             v-model="loginData.loginForm.tenantName"
@@ -26,7 +26,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item prop="username">
           <el-input
             v-model="loginData.loginForm.username"
@@ -35,7 +35,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item prop="password">
           <el-input
             v-model="loginData.loginForm.password"
@@ -47,10 +47,7 @@
           />
         </el-form-item>
       </el-col>
-      <el-col
-        :span="24"
-        style="padding-right: 10px; padding-left: 10px; margin-top: -20px; margin-bottom: -20px"
-      >
+      <el-col :span="24" class="px-10px mt-[-20px] mb-[-20px]">
         <el-form-item>
           <el-row justify="space-between" style="width: 100%">
             <el-col :span="6">
@@ -59,50 +56,57 @@
               </el-checkbox>
             </el-col>
             <el-col :offset="6" :span="12">
-              <el-link style="float: right" type="primary">{{ t('login.forgetPassword') }}</el-link>
+              <el-link
+                class="float-right"
+                type="primary"
+                @click="setLoginState(LoginStateEnum.RESET_PASSWORD)"
+              >
+                {{ t('login.forgetPassword') }}
+              </el-link>
             </el-col>
           </el-row>
         </el-form-item>
       </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
           <XButton
             :loading="loginLoading"
             :title="t('login.login')"
-            class="w-[100%]"
+            class="w-full"
             type="primary"
             @click="getCode()"
           />
         </el-form-item>
       </el-col>
       <Verify
+        v-if="loginData.captchaEnable === 'true'"
         ref="verify"
         :captchaType="captchaType"
         :imgSize="{ width: '400px', height: '200px' }"
         mode="pop"
         @success="handleLogin"
       />
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
           <el-row :gutter="5" justify="space-between" style="width: 100%">
             <el-col :span="8">
               <XButton
                 :title="t('login.btnMobile')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.MOBILE)"
               />
             </el-col>
             <el-col :span="8">
               <XButton
                 :title="t('login.btnQRCode')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.QR_CODE)"
               />
             </el-col>
             <el-col :span="8">
               <XButton
                 :title="t('login.btnRegister')"
-                class="w-[100%]"
+                class="w-full"
                 @click="setLoginState(LoginStateEnum.REGISTER)"
               />
             </el-col>
@@ -110,9 +114,9 @@
         </el-form-item>
       </el-col>
       <el-divider content-position="center">{{ t('login.otherLogin') }}</el-divider>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+      <el-col :span="24" class="px-10px">
         <el-form-item>
-          <div class="w-[100%] flex justify-between">
+          <div class="w-full flex justify-between">
             <Icon
               v-for="(item, key) in socialList"
               :key="key"
@@ -125,7 +129,6 @@
           </div>
         </el-form-item>
       </el-col>
-
     </el-row>
   </el-form>
 </template>
@@ -156,7 +159,7 @@ const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
-const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
+const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字 pictureWord 文字验证码
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
 
@@ -218,16 +221,18 @@ const getLoginFormCache = () => {
 }
 // 根据域名，获得租户信息
 const getTenantByWebsite = async () => {
-  const website = location.host
-  const res = await LoginApi.getTenantByWebsite(website)
-  if (res) {
-    loginData.loginForm.tenantName = res.name
-    authUtil.setTenantId(res.id)
+  if (loginData.tenantEnable === 'true') {
+    const website = location.host
+    const res = await LoginApi.getTenantByWebsite(website)
+    if (res) {
+      loginData.loginForm.tenantName = res.name
+      authUtil.setTenantId(res.id)
+    }
   }
 }
 const loading = ref() // ElLoading.service 返回的实例
 // 登录
-const handleLogin = async (params) => {
+const handleLogin = async (params: any) => {
   loginLoading.value = true
   try {
     await getTenantId()
@@ -235,8 +240,9 @@ const handleLogin = async (params) => {
     if (!data) {
       return
     }
-    loginData.loginForm.captchaVerification = params.captchaVerification
-    const res = await LoginApi.login(loginData.loginForm)
+    const loginDataLoginForm = { ...loginData.loginForm }
+    loginDataLoginForm.captchaVerification = params.captchaVerification
+    const res = await LoginApi.login(loginDataLoginForm)
     if (!res) {
       return
     }
@@ -245,8 +251,8 @@ const handleLogin = async (params) => {
       text: '正在加载系统中...',
       background: 'rgba(0, 0, 0, 0.7)'
     })
-    if (loginData.loginForm.rememberMe) {
-      authUtil.setLoginForm(loginData.loginForm)
+    if (loginDataLoginForm.rememberMe) {
+      authUtil.setLoginForm(loginDataLoginForm)
     } else {
       authUtil.removeLoginForm()
     }
@@ -258,7 +264,7 @@ const handleLogin = async (params) => {
     if (redirect.value.indexOf('sso') !== -1) {
       window.location.href = window.location.href.replace('/login?redirect=', '')
     } else {
-      push({ path: redirect.value || permissionStore.addRouters[0].path })
+      await push({ path: redirect.value || permissionStore.addRouters[0].path })
     }
   } finally {
     loginLoading.value = false
@@ -290,16 +296,15 @@ const doSocialLogin = async (type: number) => {
       }
     }
     // 计算 redirectUri
-    // tricky: type、redirect需要先encode一次，否则钉钉回调会丢失。
-    // 配合 Login/SocialLogin.vue#getUrlValue() 使用
+    // 注意: type、redirect 需要先 encode 一次，否则钉钉回调会丢失。
+    // 配合 social-login.vue#getUrlValue() 使用
     const redirectUri =
       location.origin +
       '/social-login?' +
       encodeURIComponent(`type=${type}&redirect=${redirect.value || '/'}`)
 
     // 进行跳转
-    const res = await LoginApi.socialAuthRedirect(type, encodeURIComponent(redirectUri))
-    window.location.href = res
+    window.location.href = await LoginApi.socialAuthRedirect(type, encodeURIComponent(redirectUri))
   }
 }
 watch(

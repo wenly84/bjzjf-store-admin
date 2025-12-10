@@ -108,7 +108,12 @@
         prop="validityType"
         width="185"
       />
-      <el-table-column align="center" label="发放数量" prop="totalCount" />
+      <el-table-column
+        :formatter="totalCountFormat"
+        align="center"
+        label="发放数量"
+        prop="totalCount"
+      />
       <el-table-column
         :formatter="remainedCountFormat"
         align="center"
@@ -188,6 +193,7 @@ import {
   discountFormat,
   remainedCountFormat,
   takeLimitCountFormat,
+  totalCountFormat,
   validityTypeFormat
 } from '@/views/mall/promotion/coupon/formatter'
 

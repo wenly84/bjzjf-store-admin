@@ -1,10 +1,3 @@
-<!--
-  - Copyright (C) 2018-2019
-  - All rights reserved, Designed By www.joolun.com
-  【微信消息 - 图文】
-  智匠坊：
-  ① 代码优化，补充注释，提升阅读性
--->
 <template>
   <div class="news-home">
     <div v-for="(article, index) in articles" :key="index" class="news-div">
@@ -13,7 +6,7 @@
         <div class="news-main">
           <div class="news-content">
             <el-image
-              :src="article.picUrl"
+                :src="article.picUrl||article.thumbUrl"
               class="material-img"
               style="width: 100%; height: 120px"
             />
@@ -29,7 +22,7 @@
           <div class="news-content-item">
             <div class="news-content-item-title">{{ article.title }}</div>
             <div class="news-content-item-img">
-              <img :src="article.picUrl" class="material-img" height="100%" />
+              <img :src="article.picUrl||article.thumbUrl" class="material-img" height="100%"/>
             </div>
           </div>
         </div>

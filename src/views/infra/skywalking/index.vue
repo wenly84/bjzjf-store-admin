@@ -1,6 +1,6 @@
 <template>
 
-  <ContentWrap>
+  <ContentWrap :bodyStyle="{ padding: '0px' }" class="!mb-0">
     <IFrame v-if="!loading" v-loading="loading" :src="src" />
   </ContentWrap>
 </template>
@@ -10,7 +10,7 @@ import * as ConfigApi from '@/api/infra/config'
 defineOptions({ name: 'InfraSkyWalking' })
 
 const loading = ref(true) // 是否加载中
-const src = ref('http://skywalking.shop.hansi.site')
+const src = ref('https://skywalking.hansi.site')
 
 /** 初始化 */
 onMounted(async () => {

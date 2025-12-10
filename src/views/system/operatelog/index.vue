@@ -1,4 +1,5 @@
 <template>
+
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form
@@ -59,7 +60,7 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-220px"
+          class="!w-240px"
         />
       </el-form-item>
       <el-form-item label="业务编号" prop="bizId">
@@ -79,7 +80,7 @@
           plain
           @click="handleExport"
           :loading="exportLoading"
-          v-hasPermi="['infra:operate-log:export']"
+          v-hasPermi="['system:operate-log:export']"
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
@@ -110,7 +111,7 @@
             link
             type="primary"
             @click="openDetail(scope.row)"
-            v-hasPermi="['infra:operate-log:query']"
+            v-hasPermi="['system:operate-log:query']"
           >
             详情
           </el-button>

@@ -1,134 +1,192 @@
 <template>
   <div>
-    <Dialog v-model="dialogVisible" :title="dialogTitle" @close="close" width="800px">
+    <Dialog v-model="dialogVisible" :title="dialogTitle" width="800px">
       <el-form
         ref="formRef"
+        v-loading="formLoading"
         :model="formData"
         :rules="formRules"
         label-width="120px"
-        v-loading="formLoading"
       >
-        <el-form-item label-width="180px" label="渠道费率" prop="feeRate">
+        <el-form-item label="渠道费率" label-width="180px" prop="feeRate">
           <el-input
             v-model="formData.feeRate"
-            placeholder="请输入渠道费率"
-            clearable
             :style="{ width: '100%' }"
+            clearable
+            placeholder="请输入渠道费率"
           >
             <template #append>%</template>
           </el-input>
         </el-form-item>
-        <el-form-item label-width="180px" label="微信 APPID" prop="config.appId">
+        <el-form-item label="微信 APPID" label-width="180px" prop="config.appId">
           <el-input
             v-model="formData.config.appId"
-            placeholder="请输入微信 APPID"
-            clearable
             :style="{ width: '100%' }"
+            clearable
+            placeholder="请输入微信 APPID"
           />
         </el-form-item>
-        <el-form-item label-width="180px" label="商户号" prop="config.mchId">
+        <el-form-item label-width="180px">
+          <a
+            href="https://pay.weixin.qq.com/index.php/extend/merchant_appid/mapay_platform/account_manage"
+            target="_blank"
+          >
+            前往微信商户平台查看 APPID
+          </a>
+        </el-form-item>
+        <el-form-item label="商户号" label-width="180px" prop="config.mchId">
           <el-input v-model="formData.config.mchId" :style="{ width: '100%' }" />
         </el-form-item>
-        <el-form-item label-width="180px" label="渠道状态" prop="status">
+
+        <el-form-item label-width="180px">
+          <a href="https://pay.weixin.qq.com/index.php/extend/pay_setting" target="_blank">
+            前往微信商户平台查看商户号
+          </a>
+        </el-form-item>
+        <el-form-item label="渠道状态" label-width="180px" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio
               v-for="dict in getDictOptions(DICT_TYPE.COMMON_STATUS)"
               :key="parseInt(dict.value)"
-              :label="parseInt(dict.value)"
+              :value="parseInt(dict.value)"
             >
               {{ dict.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label-width="180px" label="API 版本" prop="config.apiVersion">
+        <el-form-item label="API 版本" label-width="180px" prop="config.apiVersion">
           <el-radio-group v-model="formData.config.apiVersion">
-            <el-radio label="v2">v2</el-radio>
-            <el-radio label="v3">v3</el-radio>
+            <el-radio value="v2">v2</el-radio>
+            <el-radio value="v3">v3</el-radio>
           </el-radio-group>
         </el-form-item>
         <div v-if="formData.config.apiVersion === 'v2'">
-          <el-form-item label-width="180px" label="商户密钥" prop="config.mchKey">
-            <el-input
-              v-model="formData.config.mchKey"
-              placeholder="请输入商户密钥"
-              clearable
-            />
+          <el-form-item label="商户密钥" label-width="180px" prop="config.mchKey">
+            <el-input v-model="formData.config.mchKey" clearable placeholder="请输入商户密钥" />
           </el-form-item>
           <el-form-item
-            label-width="180px"
             label="apiclient_cert.p12 证书"
+            label-width="180px"
             prop="config.keyContent"
           >
             <el-input
               v-model="formData.config.keyContent"
-              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              :style="{ width: '100%' }"
               placeholder="请上传 apiclient_cert.p12 证书"
               readonly
-              :autosize="{ minRows: 8, maxRows: 8 }"
-              :style="{ width: '100%' }"
+              type="textarea"
+              :rows="2"
             />
           </el-form-item>
-          <el-form-item label-width="180px" label="">
+          <el-form-item label="" label-width="180px">
             <el-upload
+              :before-upload="p12FileBeforeUpload"
+              :http-request="keyContentUpload"
               :limit="1"
               accept=".p12"
               action=""
-              :before-upload="p12FileBeforeUpload"
-              :http-request="keyContentUpload"
             >
               <el-button type="primary">
-                <Icon icon="ep:upload" class="mr-5px" />
+                <Icon class="mr-5px" icon="ep:upload" />
                 点击上传
               </el-button>
             </el-upload>
           </el-form-item>
         </div>
         <div v-if="formData.config.apiVersion === 'v3'">
-          <el-form-item label-width="180px" label="API V3 密钥" prop="config.apiV3Key">
+          <el-form-item label="API V3 密钥" label-width="180px" prop="config.apiV3Key">
             <el-input
               v-model="formData.config.apiV3Key"
-              placeholder="请输入 API V3 密钥"
               clearable
+              placeholder="请输入 API V3 密钥"
             />
           </el-form-item>
           <el-form-item
-            label-width="180px"
             label="apiclient_key.pem 证书"
+            label-width="180px"
             prop="config.privateKeyContent"
           >
             <el-input
               v-model="formData.config.privateKeyContent"
-              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              :style="{ width: '100%' }"
               placeholder="请上传 apiclient_key.pem 证书"
               readonly
-              :autosize="{ minRows: 8, maxRows: 8 }"
-              :style="{ width: '100%' }"
+              type="textarea"
+              :rows="2"
             />
           </el-form-item>
-          <el-form-item label-width="180px" label="" prop="privateKeyContentFile">
+          <el-form-item label="" label-width="180px" prop="privateKeyContentFile">
             <el-upload
               ref="privateKeyContentFile"
+              :before-upload="pemFileBeforeUpload"
+              :http-request="privateKeyContentUpload"
               :limit="1"
               accept=".pem"
               action=""
-              :before-upload="pemFileBeforeUpload"
-              :http-request="privateKeyContentUpload"
             >
               <el-button type="primary">
-                <Icon icon="ep:upload" class="mr-5px" />
+                <Icon class="mr-5px" icon="ep:upload" />
                 点击上传
               </el-button>
             </el-upload>
           </el-form-item>
-          <el-form-item label-width="180px" label="证书序列号" prop="config.certSerialNo">
+          <el-form-item label="证书序列号" label-width="180px" prop="config.certSerialNo">
             <el-input
               v-model="formData.config.certSerialNo"
-              placeholder="请输入证书序列号"
               clearable
+              placeholder="请输入证书序列号"
             />
           </el-form-item>
+          <el-form-item label-width="180px">
+            <a
+              href="https://pay.weixin.qq.com/index.php/core/cert/api_cert#/api-cert-manage"
+              target="_blank"
+            >
+              前往微信商户平台查看证书序列号
+            </a>
+          </el-form-item>
+          <el-form-item
+            label="public_key.pem 证书"
+            label-width="180px"
+            prop="config.publicKeyContent"
+          >
+            <el-input
+              v-model="formData.config.publicKeyContent"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+              :style="{ width: '100%' }"
+              placeholder="请上传 public_key.pem 证书"
+              readonly
+              type="textarea"
+              :rows="2"
+            />
+          </el-form-item>
+          <el-form-item label="" label-width="180px" prop="publicKeyContentFile">
+            <el-upload
+              ref="publicKeyContentFile"
+              :before-upload="pemFileBeforeUpload"
+              :http-request="publicKeyContentUpload"
+              :limit="1"
+              accept=".pem"
+              action=""
+            >
+              <el-button type="primary">
+                <Icon class="mr-5px" icon="ep:upload" />
+                点击上传
+              </el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="公钥 ID" label-width="180px" prop="config.publicKeyId">
+            <el-input v-model="formData.config.publicKeyId" clearable placeholder="请输入公钥 ID" />
+          </el-form-item>
+          <el-form-item label-width="180px">
+            <a href="https://pay.weixin.qq.com/doc/v3/merchant/4012153196" target="_blank">
+              微信支付公钥产品简介及使用说明
+            </a>
+          </el-form-item>
         </div>
-        <el-form-item label-width="180px" label="备注" prop="remark">
+        <el-form-item label="备注" label-width="180px" prop="remark">
           <el-input v-model="formData.remark" :style="{ width: '100%' }" />
         </el-form-item>
       </el-form>
@@ -166,7 +224,9 @@ const formData = ref<any>({
     keyContent: '',
     privateKeyContent: '',
     certSerialNo: '',
-    apiV3Key: ''
+    apiV3Key: '',
+    publicKeyContent: '',
+    publicKeyId: ''
   }
 })
 const formRules = {
@@ -182,9 +242,8 @@ const formRules = {
   'config.privateKeyContent': [
     { required: true, message: '请上传 apiclient_key.pem 证书', trigger: 'blur' }
   ],
-  'config.certSerialNo': [
-    { required: true, message: '请输入证书序列号', trigger: 'blur' }
-  ],
+  'config.certSerialNo': [{ required: true, message: '请输入证书序列号', trigger: 'blur' }],
+  'config.publicKeyId': [{ required: true, message: '请输入公钥 ID', trigger: 'blur' }],
   'config.apiV3Key': [{ required: true, message: '请上传 api V3 密钥值', trigger: 'blur' }]
 }
 const formRef = ref() // 表单 Ref
@@ -251,7 +310,9 @@ const resetForm = (appId, code) => {
       keyContent: '',
       privateKeyContent: '',
       certSerialNo: '',
-      apiV3Key: ''
+      apiV3Key: '',
+      publicKeyContent: '',
+      publicKeyId: ''
     }
   }
   formRef.value?.resetFields()
@@ -263,7 +324,6 @@ const resetForm = (appId, code) => {
 const fileBeforeUpload = (file, fileAccept) => {
   let format = '.' + file.name.split('.')[1]
   if (format !== fileAccept) {
-    debugger
     message.error('请上传指定格式"' + fileAccept + '"文件')
     return false
   }
@@ -302,5 +362,16 @@ const keyContentUpload = async (event) => {
     formData.value.config.keyContent = e.target.result.split(',')[1]
   }
   readFile.readAsDataURL(event.file) // 读成 base64
+}
+
+/**
+ * 读取 public_key.pem 到 publicKeyContent 字段
+ */
+const publicKeyContentUpload = async (event) => {
+  const readFile = new FileReader()
+  readFile.onload = (e: any) => {
+    formData.value.config.publicKeyContent = e.target.result
+  }
+  readFile.readAsText(event.file)
 }
 </script>

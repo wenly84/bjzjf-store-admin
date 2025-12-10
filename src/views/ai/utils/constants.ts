@@ -1,11 +1,3 @@
-/**
- * Created by 智匠坊
- *
- * AI 枚举类
- *
- * 问题：为什么不放在 src/utils/constants.ts 呢？
- * 回答：主要 AI 是可选模块，考虑到独立、解耦，所以放在了 /views/ai/utils/constants.ts
- */
 
 /**
  * AI 平台的枚举
@@ -16,11 +8,21 @@ export const AiPlatformEnum = {
   DEEP_SEEK: 'DeepSeek', // DeepSeek
   ZHI_PU: 'ZhiPu', // 智谱 AI
   XING_HUO: 'XingHuo', // 讯飞
+  SiliconFlow: 'SiliconFlow', // 硅基流动
   OPENAI: 'OpenAI',
   Ollama: 'Ollama',
   STABLE_DIFFUSION: 'StableDiffusion', // Stability AI
   MIDJOURNEY: 'Midjourney', // Midjourney
   SUNO: 'Suno' // Suno AI
+}
+
+export const AiModelTypeEnum = {
+  CHAT: 1, // 聊天
+  IMAGE: 2, // 图像
+  VOICE: 3, // 音频
+  VIDEO: 4, // 视频
+  EMBEDDING: 5, // 向量
+  RERANK: 6 // 重排
 }
 
 export const OtherPlatformEnum: ImageModelVO[] = [
@@ -35,6 +37,10 @@ export const OtherPlatformEnum: ImageModelVO[] = [
   {
     key: AiPlatformEnum.ZHI_PU,
     name: '智谱 AI'
+  },
+  {
+    key: AiPlatformEnum.SiliconFlow,
+    name: '硅基流动'
   }
 ]
 
@@ -208,31 +214,6 @@ export const StableDiffusionStylePresets: ImageModelVO[] = [
   {
     key: 'tile-texture',
     name: 'tile-texture'
-  }
-]
-
-export const TongYiWanXiangModels: ImageModelVO[] = [
-  {
-    key: 'wanx-v1',
-    name: 'wanx-v1'
-  },
-  {
-    key: 'wanx-sketch-to-image-v1',
-    name: 'wanx-sketch-to-image-v1'
-  }
-]
-
-export const QianFanModels: ImageModelVO[] = [
-  {
-    key: 'sd_xl',
-    name: 'sd_xl'
-  }
-]
-
-export const ChatGlmModels: ImageModelVO[] = [
-  {
-    key: 'cogview-3',
-    name: 'cogview-3'
   }
 ]
 

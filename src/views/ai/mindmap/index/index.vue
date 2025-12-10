@@ -3,9 +3,9 @@
     <!--表单区域-->
     <Left
       ref="leftRef"
+      :is-generating="isGenerating"
       @submit="submit"
       @direct-generate="directGenerate"
-      :is-generating="isGenerating"
     />
     <!--右边生成思维导图区域-->
     <Right
@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import Left from './components/Left.vue'
 import Right from './components/Right.vue'
 import { AiMindMapApi, AiMindMapGenerateReqVO } from '@/api/ai/mindmap'
@@ -80,6 +80,8 @@ const submit = (data: AiMindMapGenerateReqVO) => {
     onError(err) {
       console.error('生成思维导图失败', err)
       stopStream()
+      // 需要抛出异常，禁止重试
+      throw error
     },
     ctrl: ctrl.value
   })

@@ -150,7 +150,6 @@ import * as BargainActivityApi from '@/api/mall/promotion/bargain/bargainActivit
 import BargainActivityForm from './BargainActivityForm.vue'
 import { formatDate } from '@/utils/formatTime'
 import { fenToYuanFormat } from '@/utils/formatter'
-import { closeBargainActivity } from '@/api/mall/promotion/bargain/bargainActivity'
 
 defineOptions({ name: 'PromotionBargainActivity' })
 
@@ -199,7 +198,7 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-// TODO 芋艿：这里要改下
+// TODO 这里要改下
 /** 关闭按钮操作 */
 const handleClose = async (id: number) => {
   try {

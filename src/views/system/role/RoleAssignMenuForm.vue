@@ -8,7 +8,7 @@
         <el-tag>{{ formData.code }}</el-tag>
       </el-form-item>
       <el-form-item label="菜单权限">
-        <el-card class="cardHeight">
+        <el-card class="w-full h-400px !overflow-y-scroll" shadow="never">
           <template #header>
             全选/全不选:
             <el-switch
@@ -151,12 +151,3 @@ const handleCheckedTreeExpand = () => {
   }
 }
 </script>
-<style lang="scss" scoped>
-.cardHeight {
-  border: 1px solid #ddeeff;
-  box-shadow: none;
-  width: 100%;
-  max-height: 400px;
-  overflow-y: scroll;
-}
-</style>

@@ -69,11 +69,18 @@ export const useApiSelect = (option: ApiSelectProps) => {
         if (isEmpty(props.url)) {
           return
         }
+
         switch (props.method) {
           case 'GET':
             let url: string = props.url
             if (props.remote) {
-              url = `${url}?${props.remoteField}=${queryParam.value}`
+              if (queryParam.value != undefined) {
+                if (url.includes('?')) {
+                  url = `${url}&${props.remoteField}=${queryParam.value}`
+                } else {
+                  url = `${url}?${props.remoteField}=${queryParam.value}`
+                }
+              }
             }
             parseOptions(await request.get({ url: url }))
             break
@@ -104,9 +111,8 @@ export const useApiSelect = (option: ApiSelectProps) => {
           parseOptions0(data)
           return
         }
-        // 情况三：不是标准返回
         console.warn(
-          `接口[${props.url}] 返回结果不是后端标准返回建议采用自定义解析函数处理`
+          `接口[${props.url}] 返回结果不是标准返回建议采用自定义解析函数处理`
         )
       }
 
@@ -185,7 +191,6 @@ export const useApiSelect = (option: ApiSelectProps) => {
             </el-select>
           )
         }
-        debugger
         return (
           <el-select
             class="w-1/1"

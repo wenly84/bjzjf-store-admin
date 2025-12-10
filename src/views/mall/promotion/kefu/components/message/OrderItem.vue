@@ -1,8 +1,13 @@
 <template>
   <div v-if="isObject(getMessageContent)">
     <div :key="getMessageContent.id" class="order-list-card-box mt-14px">
-      <div class="order-card-header flex items-center justify-between p-x-20px">
-        <div class="order-no">订单号：{{ getMessageContent.no }}</div>
+      <div class="order-card-header flex items-center justify-between p-x-5px">
+        <div class="order-no">
+          订单号：
+          <span style="cursor: pointer" @click="openDetail(getMessageContent.id)">
+            {{ getMessageContent.no }}
+          </span>
+        </div>
         <div :class="formatOrderColor(getMessageContent)" class="order-state font-16">
           {{ formatOrderStatus(getMessageContent) }}
         </div>
@@ -13,10 +18,11 @@
           :picUrl="item.picUrl"
           :price="item.price"
           :skuText="item.properties.map((property: any) => property.valueName).join(' ')"
+          :spu-id="item.spuId"
           :title="item.spuName"
         />
       </div>
-      <div class="pay-box flex justify-end pr-20px">
+      <div class="pay-box flex justify-end pr-5px">
         <div class="flex items-center">
           <div class="discounts-title pay-color"
             >共 {{ getMessageContent?.productCount }} 件商品,总金额:
@@ -36,6 +42,8 @@ import { KeFuMessageRespVO } from '@/api/mall/promotion/kefu/message'
 import { isObject } from '@/utils/is'
 import ProductItem from '@/views/mall/promotion/kefu/components/message/ProductItem.vue'
 
+const { push } = useRouter()
+
 defineOptions({ name: 'OrderItem' })
 const props = defineProps<{
   message?: KeFuMessageRespVO
@@ -45,6 +53,12 @@ const props = defineProps<{
 const getMessageContent = computed(() =>
   typeof props.message !== 'undefined' ? jsonParse(props!.message!.content) : props.order
 )
+
+/** 查看订单详情 */
+const openDetail = (id: number) => {
+  console.log(getMessageContent)
+  push({ name: 'TradeOrderDetail', params: { id } })
+}
 
 /**
  * 格式化订单状态的颜色
@@ -97,50 +111,71 @@ function formatOrderStatus(order: any) {
 .order-list-card-box {
   border-radius: 10px;
   padding: 10px;
-  background-color: #e2e2e2;
+  border: 1px var(--el-border-color) solid;
+  background-color: rgba(128, 128, 128, 0.3); // 透明色，暗黑模式下也能体现
 
   .order-card-header {
     height: 28px;
+    font-weight: bold;
 
     .order-no {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: 13px;
+
+      span {
+        &:hover {
+          text-decoration: underline;
+          color: var(--left-menu-bg-active-color);
+        }
+      }
+    }
+
+    .order-state {
+      font-size: 13px;
     }
   }
 
   .pay-box {
+    padding-top: 10px;
+    font-weight: bold;
+
     .discounts-title {
       font-size: 16px;
       line-height: normal;
-      color: #999999;
     }
 
     .discounts-money {
       font-size: 16px;
       line-height: normal;
-      color: #999;
       font-family: OPPOSANS;
     }
 
     .pay-color {
-      color: #333;
+      font-size: 13px;
     }
   }
 }
 
 .warning-color {
   color: #faad14;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .danger-color {
   color: #ff3000;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .success-color {
   color: #52c41a;
+  font-size: 11px;
+  font-weight: bold;
 }
 
 .info-color {
   color: #999999;
+  font-size: 11px;
+  font-weight: bold;
 }
 </style>

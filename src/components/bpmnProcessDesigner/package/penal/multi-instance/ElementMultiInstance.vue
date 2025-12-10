@@ -1,6 +1,37 @@
 <template>
   <div class="panel-tab__content">
-    <el-form label-width="90px">
+    <el-radio-group
+      v-if="type === 'UserTask'"
+      v-model="approveMethod"
+      @change="onApproveMethodChange"
+    >
+      <div class="flex-col">
+        <div v-for="(item, index) in APPROVE_METHODS" :key="index">
+          <el-radio :value="item.value" :label="item.value">
+            {{ item.label }}
+          </el-radio>
+          <el-form-item prop="approveRatio">
+            <el-input-number
+              v-model="approveRatio"
+              :min="10"
+              :max="100"
+              :step="10"
+              size="small"
+              v-if="
+                item.value === ApproveMethodType.APPROVE_BY_RATIO &&
+                approveMethod === ApproveMethodType.APPROVE_BY_RATIO
+              "
+              @change="onApproveRatioChange"
+            />
+          </el-form-item>
+        </div>
+      </div>
+    </el-radio-group>
+    <div v-else>
+      除了UserTask以外节点的多实例待实现
+    </div>
+    <!-- 与Simple设计器配置合并，保留以前的代码 -->
+    <el-form label-width="90px" style="display: none">
       <el-form-item label="快捷配置">
         <el-button size="small" @click="changeConfig('依次审批')">依次审批</el-button>
         <el-button size="small" @click="changeConfig('会签')">会签</el-button>
@@ -29,7 +60,7 @@
         <el-form-item label="集合" key="collection" v-show="false">
           <el-input v-model="loopInstanceForm.collection" clearable @change="updateLoopBase" />
         </el-form-item>
-        <!-- add by 芋艿：由于「元素变量」暂时用不到，所以这里 display 为 none -->
+        <!-- 由于「元素变量」暂时用不到，所以这里 display 为 none -->
         <el-form-item label="元素变量" key="elementVariable" style="display: none">
           <el-input v-model="loopInstanceForm.elementVariable" clearable @change="updateLoopBase" />
         </el-form-item>
@@ -40,22 +71,25 @@
             @change="updateLoopCondition"
           />
         </el-form-item>
-        <!-- add by 芋艿：由于「异步状态」暂时用不到，所以这里 display 为 none -->
+        <!--由于「异步状态」暂时用不到，所以这里 display 为 none -->
         <el-form-item label="异步状态" key="async" style="display: none">
           <el-checkbox
             v-model="loopInstanceForm.asyncBefore"
             label="异步前"
+            value="异步前"
             @change="updateLoopAsync('asyncBefore')"
           />
           <el-checkbox
             v-model="loopInstanceForm.asyncAfter"
             label="异步后"
+            value="异步后"
             @change="updateLoopAsync('asyncAfter')"
           />
           <el-checkbox
             v-model="loopInstanceForm.exclusive"
             v-if="loopInstanceForm.asyncAfter || loopInstanceForm.asyncBefore"
             label="排除"
+            value="排除"
             @change="updateLoopAsync('exclusive')"
           />
         </el-form-item>
@@ -73,11 +107,14 @@
 </template>
 
 <script lang="ts" setup>
+import { ApproveMethodType, APPROVE_METHODS } from '@/components/SimpleProcessDesignerV2/src/consts'
+
 defineOptions({ name: 'ElementMultiInstance' })
 
 const props = defineProps({
   businessObject: Object,
-  type: String
+  type: String,
+  id: String
 })
 const prefix = inject('prefix')
 const loopCharacteristics = ref('')
@@ -264,16 +301,120 @@ const changeConfig = (config) => {
   }
 }
 
+/**
+ * -----新版本多实例-----
+ */
+const approveMethod = ref()
+const approveRatio = ref(100)
+const otherExtensions = ref()
+const getElementLoopNew = () => {
+  if (props.type === 'UserTask') {
+    const extensionElements =
+      bpmnElement.value.businessObject?.extensionElements ??
+      bpmnInstances().moddle.create('bpmn:ExtensionElements', { values: [] })
+    approveMethod.value = extensionElements.values.filter(
+      (ex) => ex.$type === `${prefix}:ApproveMethod`
+    )?.[0]?.value
+
+    otherExtensions.value =
+      extensionElements.values.filter((ex) => ex.$type !== `${prefix}:ApproveMethod`) ?? []
+
+    if (!approveMethod.value) {
+      approveMethod.value = ApproveMethodType.SEQUENTIAL_APPROVE
+      updateLoopCharacteristics()
+    }
+  }
+}
+const onApproveMethodChange = () => {
+  approveRatio.value = 100
+  updateLoopCharacteristics()
+}
+const onApproveRatioChange = () => {
+  updateLoopCharacteristics()
+}
+const updateLoopCharacteristics = () => {
+  // 根据ApproveMethod生成multiInstanceLoopCharacteristics节点
+  if (approveMethod.value === ApproveMethodType.RANDOM_SELECT_ONE_APPROVE) {
+    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
+      loopCharacteristics: null
+    })
+  } else {
+    if (approveMethod.value === ApproveMethodType.APPROVE_BY_RATIO) {
+      multiLoopInstance.value = bpmnInstances().moddle.create(
+        'bpmn:MultiInstanceLoopCharacteristics',
+        { isSequential: false, collection: '${coll_userList}' }
+      )
+      multiLoopInstance.value.completionCondition = bpmnInstances().moddle.create(
+        'bpmn:FormalExpression',
+        {
+          body: '${ nrOfCompletedInstances/nrOfInstances >= ' + approveRatio.value / 100 + '}'
+        }
+      )
+    }
+    if (approveMethod.value === ApproveMethodType.ANY_APPROVE) {
+      multiLoopInstance.value = bpmnInstances().moddle.create(
+        'bpmn:MultiInstanceLoopCharacteristics',
+        { isSequential: false, collection: '${coll_userList}' }
+      )
+      multiLoopInstance.value.completionCondition = bpmnInstances().moddle.create(
+        'bpmn:FormalExpression',
+        {
+          body: '${ nrOfCompletedInstances > 0 }'
+        }
+      )
+    }
+    if (approveMethod.value === ApproveMethodType.SEQUENTIAL_APPROVE) {
+      multiLoopInstance.value = bpmnInstances().moddle.create(
+        'bpmn:MultiInstanceLoopCharacteristics',
+        { isSequential: true, collection: '${coll_userList}' }
+      )
+      multiLoopInstance.value.loopCardinality = bpmnInstances().moddle.create(
+        'bpmn:FormalExpression',
+        {
+          body: '1'
+        }
+      )
+      multiLoopInstance.value.completionCondition = bpmnInstances().moddle.create(
+        'bpmn:FormalExpression',
+        {
+          body: '${ nrOfCompletedInstances >= nrOfInstances }'
+        }
+      )
+    }
+    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
+      loopCharacteristics: toRaw(multiLoopInstance.value)
+    })
+  }
+
+  // 添加ApproveMethod到ExtensionElements
+  const extensions = bpmnInstances().moddle.create('bpmn:ExtensionElements', {
+    values: [
+      ...otherExtensions.value,
+      bpmnInstances().moddle.create(`${prefix}:ApproveMethod`, {
+        value: approveMethod.value
+      })
+    ]
+  })
+  bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
+    extensionElements: extensions
+  })
+}
+
 onBeforeUnmount(() => {
   multiLoopInstance.value = null
   bpmnElement.value = null
 })
 
 watch(
-  () => props.businessObject,
+  () => props.id,
   (val) => {
-    bpmnElement.value = bpmnInstances().bpmnElement
-    getElementLoop(val)
+    if (val) {
+      nextTick(() => {
+        bpmnElement.value = bpmnInstances().bpmnElement
+        // getElementLoop(val)
+        getElementLoopNew()
+      })
+    }
   },
   { immediate: true }
 )

@@ -1,12 +1,3 @@
-<!--
-  - Copyright (C) 2018-2019
-  - All rights reserved, Designed By www.joolun.com
-  智匠坊：
-  ① 移除多余的 rep 为前缀的变量，让 message 消息更简单
-  ② 代码优化，补充注释，提升阅读性
-  ③ 优化消息的临时缓存策略，发送消息时，只清理被发送消息的 tab，不会强制切回到 text 输入
-  ④ 支持发送【视频】消息时，支持新建视频
--->
 <template>
   <el-tabs type="border-card" v-model="currentTab">
     <!-- 类型 1：文本 -->

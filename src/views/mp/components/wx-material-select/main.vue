@@ -1,9 +1,3 @@
-<!--
-  - Copyright (C) 2018-2019
-  - All rights reserved, Designed By www.joolun.com
-  智匠坊：
-  ① 移除 avue 组件，使用 ElementUI 原生组件
--->
 <template>
   <div class="pb-30px">
     <!-- 类型：image -->

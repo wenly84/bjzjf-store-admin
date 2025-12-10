@@ -1,5 +1,5 @@
 <template>
-  
+
   <!-- 搜索 -->
   <ContentWrap>
     <el-form
@@ -9,10 +9,10 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="加盟方名称" prop="name">
+      <el-form-item label="租户名" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入加盟方名称"
+          placeholder="请输入租户名"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -36,10 +36,10 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="加盟状态" prop="status">
+      <el-form-item label="租户状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择加盟状态"
+          placeholder="请选择租户状态"
           clearable
           class="!w-240px"
         >
@@ -91,18 +91,29 @@
           <Icon icon="ep:download" class="mr-5px" />
           导出
         </el-button>
+        <el-button
+          type="danger"
+          plain
+          :disabled="checkedIds.length === 0"
+          @click="handleDeleteBatch"
+          v-hasPermi="['system:tenant:delete']"
+        >
+          <Icon icon="ep:delete" class="mr-5px" />
+          批量删除
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list">
-      <el-table-column label="加盟编号" align="center" prop="id" />
-      <el-table-column label="加盟方名称" align="center" prop="name" />
-      <el-table-column label="加盟套餐" align="center" prop="packageId">
+    <el-table v-loading="loading" :data="list" @selection-change="handleRowCheckboxChange">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="租户编号" align="center" prop="id" />
+      <el-table-column label="租户名" align="center" prop="name" />
+      <el-table-column label="租户套餐" align="center" prop="packageId">
         <template #default="scope">
-          <el-tag v-if="scope.row.packageId === 0" type="danger">系统内置</el-tag>
+          <el-tag v-if="scope.row.packageId === 0" type="danger">系统租户</el-tag>
           <template v-else v-for="item in packageList">
             <el-tag type="success" :key="item.id" v-if="item.id === scope.row.packageId">
               {{ item.name }}
@@ -124,8 +135,15 @@
         width="180"
         :formatter="dateFormatter"
       />
-      <el-table-column label="绑定域名" align="center" prop="website" width="180" />
-      <el-table-column label="加盟状态" align="center" prop="status">
+      <el-table-column label="绑定域名" align="center" prop="websites" width="180">
+        <template #default="scope">
+          <el-tag v-for="website in scope.row.websites || []" :key="website" class="mr-1 mb-1">
+            {{ website }}
+          </el-tag>
+          <span v-if="!scope.row.websites || scope.row.websites.length === 0">-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户状态" align="center" prop="status">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
@@ -197,7 +215,7 @@ const queryParams = reactive({
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
-const packageList = ref([] as TenantPackageApi.TenantPackageVO[]) //加盟套餐列表
+const packageList = ref([] as TenantPackageApi.TenantPackageVO[]) //租户套餐列表
 
 /** 查询列表 */
 const getList = async () => {
@@ -242,6 +260,25 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
+/** 批量删除按钮操作 */
+const checkedIds = ref<number[]>([])
+const handleRowCheckboxChange = (rows: TenantApi.TenantVO[]) => {
+  checkedIds.value = rows.map((row) => row.id)
+}
+
+const handleDeleteBatch = async () => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起批量删除
+    await TenantApi.deleteTenantList(checkedIds.value)
+    checkedIds.value = []
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
 /** 导出按钮操作 */
 const handleExport = async () => {
   try {
@@ -250,7 +287,7 @@ const handleExport = async () => {
     // 发起导出
     exportLoading.value = true
     const data = await TenantApi.exportTenant(queryParams)
-    download.excel(data, '加盟方列表.xls')
+    download.excel(data, '租户列表.xls')
   } catch {
   } finally {
     exportLoading.value = false
@@ -260,6 +297,7 @@ const handleExport = async () => {
 /** 初始化 **/
 onMounted(async () => {
   await getList()
+  // 获取租户套餐列表
   packageList.value = await TenantPackageApi.getTenantPackageList()
 })
 </script>

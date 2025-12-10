@@ -56,7 +56,7 @@ export default defineComponent({
     // 注册
     onMounted(() => {
       const tableRef = unref(elTableRef)
-      emit('register', tableRef?.$parent, elTableRef)
+      emit('register', tableRef?.$parent, elTableRef.value)
     })
 
     const pageSizeRef = ref(props.pageSize)
@@ -105,7 +105,7 @@ export default defineComponent({
     })
 
     const pagination = computed(() => {
-      // update by 芋艿：保持和 Pagination 组件的逻辑一致
+      //保持和 Pagination 组件的逻辑一致
       return Object.assign(
         {
           small: false,
@@ -285,7 +285,7 @@ export default defineComponent({
           }}
         </ElTable>
         {unref(getProps).pagination ? (
-          // update by 芋艿：保持和 Pagination 组件一致
+          // 保持和 Pagination 组件一致
           <ElPagination
             v-model:pageSize={pageSizeRef.value}
             v-model:currentPage={currentPageRef.value}

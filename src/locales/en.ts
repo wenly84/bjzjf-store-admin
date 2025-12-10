@@ -7,6 +7,7 @@ export default {
     login: 'Login',
     required: 'This is required',
     loginOut: 'Login out',
+    document: 'Document',
     profile: 'User Center',
     reminder: 'Reminder',
     loginOutMessage: 'Exit the system?',
@@ -139,12 +140,17 @@ export default {
     btnQRCode: 'QR code sign in',
     qrcode: 'Scan the QR code to log in',
     btnRegister: 'Sign up',
-    SmsSendMsg: 'code has been sent'
+    SmsSendMsg: 'code has been sent',
+    resetPassword: "Reset Password",
+    resetPasswordSuccess: "Reset Password Success",
+    invalidTenantName:"Invalid Tenant Name"
   },
   captcha: {
+    verify: 'Verify',
     verification: 'Please complete security verification',
     slide: 'Swipe right to complete verification',
     point: 'Please click',
+    code: 'Please enter the verification code',
     success: 'Verification succeeded',
     fail: 'verification failed'
   },

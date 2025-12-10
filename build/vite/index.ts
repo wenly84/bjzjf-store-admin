@@ -13,7 +13,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import viteCompression from 'vite-plugin-compression'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons-ng'
 import UnoCSS from 'unocss/vite'
 
 export function createVitePlugins() {
@@ -78,7 +78,6 @@ export function createVitePlugins() {
     createSvgIconsPlugin({
       iconDirs: [pathResolve('src/assets/svgs')],
       symbolId: 'icon-[dir]-[name]',
-      svgoOptions: true
     }),
     viteCompression({
       verbose: true, // 是否在控制台输出压缩结果
@@ -90,10 +89,7 @@ export function createVitePlugins() {
     }),
     ViteEjsPlugin(),
     topLevelAwait({
-      // https://juejin.cn/post/7152191742513512485
-      // The export name of top-level await promise for each chunk module
       promiseExportName: '__tla',
-      // The function to generate import names of top-level await promise in each chunk module
       promiseImportName: (i) => `__tla_${i}`
     })
   ]

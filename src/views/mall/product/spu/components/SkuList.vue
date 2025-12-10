@@ -260,17 +260,17 @@
     </el-table-column>
     <el-table-column align="center" label="销售价(元)" min-width="80">
       <template #default="{ row }">
-        {{ row.price }}
+        {{ formatToFraction(row.price) }}
       </template>
     </el-table-column>
     <el-table-column align="center" label="市场价(元)" min-width="80">
       <template #default="{ row }">
-        {{ row.marketPrice }}
+        {{ formatToFraction(row.marketPrice) }}
       </template>
     </el-table-column>
     <el-table-column align="center" label="成本价(元)" min-width="80">
       <template #default="{ row }">
-        {{ row.costPrice }}
+        {{ formatToFraction(row.costPrice) }}
       </template>
     </el-table-column>
     <el-table-column align="center" label="库存" min-width="80">
@@ -284,7 +284,7 @@
 </template>
 <script lang="ts" setup>
 import { PropType, Ref } from 'vue'
-import { copyValueToTarget } from '@/utils'
+import { copyValueToTarget, formatToFraction } from '@/utils'
 import { propTypes } from '@/utils/propTypes'
 import { UploadImg } from '@/components/UploadFile'
 import type { Property, Sku, Spu } from '@/api/mall/product/spu'

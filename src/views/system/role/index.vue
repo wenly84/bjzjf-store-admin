@@ -1,5 +1,5 @@
 <template>
-  
+
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form
@@ -76,13 +76,24 @@
           <Icon class="mr-5px" icon="ep:download" />
           导出
         </el-button>
+        <el-button
+          v-hasPermi="['system:role:delete']"
+          :disabled="checkedIds.length === 0"
+          plain
+          type="danger"
+          @click="handleDeleteBatch"
+        >
+          <Icon class="mr-5px" icon="ep:delete" />
+          批量删除
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list">
+    <el-table v-loading="loading" :data="list" @selection-change="handleRowCheckboxChange">
+      <el-table-column type="selection" width="55" />
       <el-table-column align="center" label="角色编号" prop="id" />
       <el-table-column align="center" label="角色名称" prop="name" />
       <el-table-column label="角色类型" align="center" prop="type">
@@ -245,6 +256,25 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
+/** 批量删除按钮操作 */
+const checkedIds = ref<number[]>([])
+const handleRowCheckboxChange = (rows: RoleApi.RoleVO[]) => {
+  checkedIds.value = rows.map((row) => row.id)
+}
+
+const handleDeleteBatch = async () => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起批量删除
+    await RoleApi.deleteRoleList(checkedIds.value)
+    checkedIds.value = []
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
 /** 导出按钮操作 */
 const handleExport = async () => {
   try {
@@ -253,14 +283,14 @@ const handleExport = async () => {
     // 发起导出
     exportLoading.value = true
     const data = await RoleApi.exportRole(queryParams)
-    download.excel(data, '角色列表.xls')
+    download.excel(data, '角色数据.xls')
   } catch {
   } finally {
     exportLoading.value = false
   }
 }
 
-/** 初始化 **/
+/** 初始化 */
 onMounted(() => {
   getList()
 })

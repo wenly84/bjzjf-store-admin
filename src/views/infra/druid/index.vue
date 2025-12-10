@@ -1,7 +1,7 @@
 <template>
-  
-  <ContentWrap>
-    <IFrame v-if="!loading" :src="url" />
+
+  <ContentWrap :bodyStyle="{ padding: '0px' }" class="!mb-0">
+    <IFrame v-if="!loading" v-loading="loading" :src="url" />
   </ContentWrap>
 </template>
 <script lang="ts" setup>

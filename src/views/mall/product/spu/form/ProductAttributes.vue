@@ -19,19 +19,19 @@
         {{ value.name }}
       </el-tag>
       <el-select
+        v-show="inputVisible(index)"
         :id="`input${index}`"
         :ref="setInputRef"
-        v-show="inputVisible(index)"
         v-model="inputValue"
-        filterable
-        allow-create
-        default-first-option
         :reserve-keyword="false"
-        size="small"
+        allow-create
         class="!w-30"
+        default-first-option
+        filterable
+        size="small"
         @blur="handleInputConfirm(index, item.id)"
-        @keyup.enter="handleInputConfirm(index, item.id)"
         @change="handleInputConfirm(index, item.id)"
+        @keyup.enter="handleInputConfirm(index, item.id)"
       >
         <el-option
           v-for="item2 in attributeOptions"
@@ -74,7 +74,7 @@ const inputRef = ref<any[]>([]) //标签输入框Ref
 const setInputRef = (el: any) => {
   if (el === null || typeof el === 'undefined') return
   // 如果不存在 id 相同的元素才添加
-  if (!inputRef.value.some((item) => item.input?.attributes.id === el.input?.attributes.id)) {
+  if (!inputRef.value.some((item) => item.inputRef?.attributes.id === el.inputRef?.attributes.id)) {
     inputRef.value.push(el)
   }
 }
